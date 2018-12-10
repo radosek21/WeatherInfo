@@ -2,6 +2,9 @@ package net.vanhara.radek.weatherinfo;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,9 +30,10 @@ public class MainActivity extends AppCompatActivity {
     TextView selectCity, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
     ProgressBar loader;
     Typeface weatherFont;
-    String city = "Holesov, CZ";
+    String city = "holesov";
     /* Please Put your API KEY here */
-    String OPEN_WEATHER_MAP_API = "cbfdb21fa1793c10b14b6b6d00fbef03";
+    String OPEN_WEATHER_MAP_API = "e3a4db20e01d8e050fd123e80a3d80c6";
+    public final static String EXTRA_MESSAGE = "net.vanhara.radek.MESSAGE";
     /* Please Put your API KEY here */
 
 
@@ -56,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
         selectCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*Intent intent = new Intent(MainActivity.this, LocationActivity.class);
+                intent.putExtra(EXTRA_MESSAGE, city);
+                startActivity(intent);*/
+
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
                 alertDialog.setTitle("Change City");
                 final EditText input = new EditText(MainActivity.this);
