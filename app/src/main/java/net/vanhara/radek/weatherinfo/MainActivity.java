@@ -60,10 +60,10 @@ public class MainActivity extends AppCompatActivity {
         selectCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(MainActivity.this, LocationActivity.class);
+                Intent intent = new Intent(MainActivity.this, LocationActivity.class);
                 intent.putExtra(EXTRA_MESSAGE, city);
-                startActivity(intent);*/
-
+                startActivity(intent);
+/*
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
                 alertDialog.setTitle("Change City");
                 final EditText input = new EditText(MainActivity.this);
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                                 dialog.cancel();
                             }
                         });
-                alertDialog.show();
+                alertDialog.show();*/
             }
         });
 
