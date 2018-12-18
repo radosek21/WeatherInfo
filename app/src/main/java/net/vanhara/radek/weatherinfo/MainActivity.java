@@ -1,6 +1,7 @@
 package net.vanhara.radek.weatherinfo;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +11,21 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -34,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     /* Please Put your API KEY here */
     String OPEN_WEATHER_MAP_API = "e3a4db20e01d8e050fd123e80a3d80c6";
     public final static String EXTRA_MESSAGE = "net.vanhara.radek.MESSAGE";
+    public String myLocationFile = "myLocationFile.dat";
+    Context myContext;
+
     /* Please Put your API KEY here */
 
 
@@ -42,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
+        myContext = this;
 
         loader = (ProgressBar) findViewById(R.id.loader);
         selectCity = (TextView) findViewById(R.id.selectCity);
@@ -93,6 +105,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        try {
+            LatLng myPosition;
+            FileInputStream fis = myContext.openFileInput(myLocationFile);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            myPosition= (LatLng) ois.readObject();
+            fis.close();
+            Log.i("LocationActivity",myPosition.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void taskLoadUp(String query) {
         if (Function.isNetworkAvailable(getApplicationContext())) {
