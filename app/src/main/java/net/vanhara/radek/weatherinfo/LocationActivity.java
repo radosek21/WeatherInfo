@@ -23,14 +23,24 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     private GoogleMap mMap;
     Button goButton;
     Marker myLocation;
-    FileOutputStream outputStream;
     public String myLocationFile = "myLocationFile.dat";
     public Context myContext;
+    LatLng myPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myContext = this;
+        Bundle bundle = getIntent().getExtras();
+        if(bundle.getString(MainActivity.EXTRA_MESSAGE)!= null)
+        {
+            String []locations = bundle.getString(MainActivity.EXTRA_MESSAGE).split(",");
+            myPosition = new LatLng(Double.parseDouble(locations[0]), Double.parseDouble(locations[1]));
+        }
+        else
+        {
+            myPosition = new LatLng(49.33, 17.58);
+        }
         setContentView(R.layout.activity_location);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -44,12 +54,12 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
                 try {
                     FileOutputStream fos = myContext.openFileOutput(myLocationFile, Context.MODE_PRIVATE);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject((Object)myLocation.getPosition().toString());
+                    fos.write(myLocation.getPosition().toString().getBytes());
                     fos.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                finish();
             }
         });
     }
@@ -58,10 +68,8 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng holesov = new LatLng(49.33, 17.58);
-        myLocation = mMap.addMarker(new MarkerOptions().position(holesov).draggable(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(holesov));
+        myLocation = mMap.addMarker(new MarkerOptions().position(myPosition).draggable(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(myPosition));
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override

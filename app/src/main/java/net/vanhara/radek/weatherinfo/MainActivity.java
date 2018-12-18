@@ -29,6 +29,7 @@ import java.io.ObjectInputStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.io.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     TextView selectCity, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
     ProgressBar loader;
     Typeface weatherFont;
-    String city = "holesov";
+    String Lat = "49.32468166813563";
+    String Lng = "17.585845068097115";
     /* Please Put your API KEY here */
     String OPEN_WEATHER_MAP_API = "e3a4db20e01d8e050fd123e80a3d80c6";
     public final static String EXTRA_MESSAGE = "net.vanhara.radek.MESSAGE";
@@ -66,65 +68,50 @@ public class MainActivity extends AppCompatActivity {
         weatherIcon = (TextView) findViewById(R.id.weather_icon);
         weatherFont = Typeface.createFromAsset(getAssets(), "fonts/weathericons-regular-webfont.ttf");
         weatherIcon.setTypeface(weatherFont);
-
-        taskLoadUp(city);
+        loadDataFromBackup();
+        taskLoadUp(Lat, Lng);
 
         selectCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LocationActivity.class);
-                intent.putExtra(EXTRA_MESSAGE, city);
+                intent.putExtra(EXTRA_MESSAGE, Lat.toString()+"," + Lng.toString());
                 startActivity(intent);
-/*
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-                alertDialog.setTitle("Change City");
-                final EditText input = new EditText(MainActivity.this);
-                input.setText(city);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-                input.setLayoutParams(lp);
-                alertDialog.setView(input);
-
-                alertDialog.setPositiveButton("Change",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                city = input.getText().toString();
-                                taskLoadUp(city);
-                            }
-                        });
-                alertDialog.setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                alertDialog.show();*/
             }
-        });
+         } );
+    }
 
+    protected void loadDataFromBackup()
+    {
+        try {
+            FileInputStream  fileInputStream = myContext.openFileInput(myLocationFile);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line = bufferedReader.readLine();
+            Log.i("LocationActivity", line);
+            line = line.substring(10, line.length() - 1);
+            String []locations = line.split(",");
+            Lat = locations[0];
+            Lng = locations[1];
+            fileInputStream.close();
+            //Log.i("LocationActivity",myPosition.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
     @Override
     public void onResume(){
         super.onResume();
-        try {
-            LatLng myPosition;
-            FileInputStream fis = myContext.openFileInput(myLocationFile);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            myPosition= (LatLng) ois.readObject();
-            fis.close();
-            Log.i("LocationActivity",myPosition.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        loadDataFromBackup();
+        taskLoadUp(Lat, Lng);
     }
 
-    public void taskLoadUp(String query) {
+    public void taskLoadUp(String Lat, String Lng) {
         if (Function.isNetworkAvailable(getApplicationContext())) {
             DownloadWeather task = new DownloadWeather();
-            task.execute(query);
+            task.execute(Lat, Lng);
         } else {
             Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
         }
@@ -140,8 +127,9 @@ public class MainActivity extends AppCompatActivity {
 
         }
         protected String doInBackground(String...args) {
-            String xml = Function.excuteGet("http://api.openweathermap.org/data/2.5/weather?q=" + args[0] +
-                    "&units=metric&appid=" + OPEN_WEATHER_MAP_API);
+            String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + args[0] +"&lon="+ args[1] +
+                    "&units=metric&appid=" + OPEN_WEATHER_MAP_API;
+            String xml = Function.excuteGet(url);
             return xml;
         }
         @Override
