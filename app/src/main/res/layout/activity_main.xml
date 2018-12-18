@@ -27,7 +27,7 @@
         android:id="@+id/selectCity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change City"
+        android:text="@string/change_city"
         android:textStyle="italic"
         android:textSize="11dp"
         android:textColor="@color/colorAccent"

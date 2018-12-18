@@ -2,5 +2,6 @@
     <string name="app_name">WeatherInfo</string>
     <string name="title_activity_location">Map</string>
     <string name="pick_place">Choose the place</string>
+    <string name="change_city">Change City</string>
     <string name="go">GO</string>
 </resources>
